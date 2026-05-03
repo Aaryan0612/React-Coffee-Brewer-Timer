@@ -7,24 +7,35 @@ function App() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [selectedBrew, setSelectedBrew] = useState(null);
-  const [message, setMessage] = useState("");
+  const [hasFinished, setHasFinished] = useState(false);
 
   useEffect(() => {
-    let timer;
+    if (!isRunning || time === 0) return;
 
-    if (isRunning && time > 0) {
-      timer = setInterval(() => {
-        setTime((prev) => prev - 1);
-      }, 1000);
-    }
+    const timer = setTimeout(() => {
+      if (time === 1) {
+        setTime(0);
+        setIsRunning(false);
+        setHasFinished(true);
+        return;
+      }
 
-    if (time === 0 && isRunning) {
-      setIsRunning(false);
-      setMessage("☕ Your coffee is ready!");
-    }
+      setTime((prev) => prev - 1);
+    }, 1000);
 
-    return () => clearInterval(timer);
+    return () => clearTimeout(timer);
   }, [isRunning, time]);
+
+  const selectedMessage = selectedBrew
+    ? `You selected ${selectedBrew.name}.`
+    : "Select a coffee to begin.";
+
+  const statusMessage =
+    isRunning && selectedBrew
+      ? `Your ${selectedBrew.name} will be ready in:`
+      : hasFinished && selectedBrew
+        ? `Your ${selectedBrew.name} is ready!`
+        : "";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-200 via-orange-300 to-orange-500">
@@ -32,6 +43,8 @@ function App() {
         <h1 className="text-2xl font-semibold text-gray-800">
           Coffee Brew Timer ☕
         </h1>
+
+        <p className="text-sm font-medium text-amber-800">{selectedMessage}</p>
 
         {/* Image */}
         {selectedBrew && (
@@ -43,26 +56,29 @@ function App() {
         )}
 
         {/* Timer */}
-        <TimerDisplay time={time} />
-
-        {/* Message */}
-        {message && (
-          <p className="text-green-600 font-medium text-sm">{message}</p>
+        {statusMessage && (
+          <p className="text-center text-sm font-medium text-green-700">
+            {statusMessage}
+          </p>
         )}
+        <TimerDisplay time={time} />
 
         {/* Brew buttons */}
         <BrewCard
+          selectedBrew={selectedBrew}
           setTime={setTime}
           setIsRunning={setIsRunning}
           setSelectedBrew={setSelectedBrew}
-          setMessage={setMessage}
+          setHasFinished={setHasFinished}
         />
 
         {/* Controls */}
         <Controls
+          selectedBrew={selectedBrew}
+          time={time}
           setIsRunning={setIsRunning}
           setTime={setTime}
-          setMessage={setMessage}
+          setHasFinished={setHasFinished}
         />
       </div>
     </div>

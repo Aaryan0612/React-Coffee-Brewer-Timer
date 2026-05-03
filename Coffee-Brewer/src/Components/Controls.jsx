@@ -1,9 +1,19 @@
-function Controls({ setIsRunning, setTime, setMessage }) {
+function Controls({
+  selectedBrew,
+  time,
+  setIsRunning,
+  setTime,
+  setHasFinished,
+}) {
   return (
     <div className="flex gap-4">
       <button
         className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl shadow-md transition"
-        onClick={() => setIsRunning(true)}
+        onClick={() => {
+          if (!selectedBrew || time === 0) return;
+          setHasFinished(false);
+          setIsRunning(true);
+        }}
       >
         Start
       </button>
@@ -18,8 +28,9 @@ function Controls({ setIsRunning, setTime, setMessage }) {
       <button
         className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl shadow-md transition"
         onClick={() => {
+          setIsRunning(false);
           setTime(0);
-          setMessage("");
+          setHasFinished(false);
         }}
       >
         Reset
