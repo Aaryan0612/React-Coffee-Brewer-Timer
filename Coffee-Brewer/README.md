@@ -1,149 +1,159 @@
-# ☕ Coffee Brew Timer (React Project)
+# ☕ Coffee Brew Timer
 
-This project is a simple but structured React application that simulates a coffee brewing timer.
-It demonstrates how React manages UI using **state, props, and component-based architecture**.
+<img width="1470" height="956" alt="Screenshot 2026-05-03 at 9 13 39 PM" src="https://github.com/user-attachments/assets/40f48966-2318-4e07-91b2-4da771138310" />
 
----
+<img width="1470" height="956" alt="Screenshot 2026-05-03 at 9 14 15 PM" src="https://github.com/user-attachments/assets/93e51089-e4d2-46d1-b8c4-9c699d0f5e76" />
 
-# 🎯 Objective
+A simple and clean React application that simulates a coffee brewing timer.
 
-To build a timer that:
-
-* Lets the user select a coffee type
-* Starts a countdown based on preset time
-* Updates UI automatically
-* Displays a completion message when done
+The focus of this project is not complexity, but **clarity of logic, data flow, and React fundamentals**.
 
 ---
 
-# 🧠 Core Concept of This Project
+# 🎯 What This App Does
 
-> React UI = Function of State
-
-This means:
-
-* UI does NOT change manually
-* UI updates automatically when **state changes**
+* Lets user select a coffee type
+* Starts a predefined timer
+* Shows real-time status messages
+* Displays completion message when brew is ready
 
 ---
 
-# ⚙️ MOST IMPORTANT FILE
+# 🚀 Run Locally
 
-## 👉 `App.jsx` (THE BRAIN)
-
-* Holds ALL important state
-* Controls logic
-* Passes data to other components
+```bash
+npm install
+npm run dev
+```
 
 ---
 
-## 👉 `main.jsx` (ENTRY POINT)
+# 📁 Project Structure
 
-* Starts the React app
-* Renders `<App />` into the DOM
+```
+src/
+  App.jsx              → Main logic (state + flow)
+  data.jsx             → Coffee presets
+  Components/
+    BrewCard.jsx       → Coffee selection
+    Controls.jsx       → Start / Pause / Reset
+    TimerDisplay.jsx   → Time display
+```
+
+---
+
+# 🧠 Most Important File
+
+## 👉 App.jsx (The Brain of the App)
+
+This file:
+
+* Stores all state
+* Controls the timer logic
+* Decides what UI should be shown
+
+### Why App.jsx is important?
+
+Because:
+
+> React apps are driven by state, and all state is managed here.
+
+---
+
+## 👉 main.jsx (Entry Point)
 
 ```js
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 ```
 
-### 🧠 Simple Understanding:
+This simply:
 
-* `main.jsx` = starts the app
-* `App.jsx` = controls the app
+* Loads the app
+* Renders App.jsx
 
-👉 So **App.jsx is more important for logic**
-
----
-
-# 🧱 HOW THE PROJECT WAS BUILT (FLOW)
-
-### Step 1: Setup
-
-* Created React app using Vite
-* Installed Tailwind for styling
+👉 It does NOT contain logic
+👉 It only starts the app
 
 ---
 
-### Step 2: Created Components
+# 🔁 Core Idea of This Project
 
-```id="structure-flow"
-App.jsx
- ├── BrewCard.jsx
- ├── TimerDisplay.jsx
- └── Controls.jsx
-```
+> UI = Function of State
 
-Each component has a **single responsibility**:
+This means:
 
-* BrewCard → selection
-* TimerDisplay → UI display
-* Controls → actions
+* UI is not manually changed
+* UI automatically updates when state changes
 
 ---
 
-# 🔁 COMPLETE DATA FLOW (VERY IMPORTANT)
-
-## 🟢 Step 1: User clicks button
-
-Inside `BrewCard.jsx`:
+# ⚙️ State Used in App.jsx
 
 ```js
-onClick={() => {
-  setTime(item.time);
-  setSelectedBrew(item);
-}}
+time           → remaining seconds
+isRunning      → whether timer is active
+selectedBrew   → selected coffee object
+hasFinished    → whether brew is completed
 ```
 
 ---
 
-## 🟢 Step 2: State updates in App.jsx
+# 🔄 Complete Data Flow (Step-by-Step)
+
+## 1. User selects coffee
+
+In BrewCard.jsx:
 
 ```js
-const [time, setTime] = useState(0);
-const [selectedBrew, setSelectedBrew] = useState(null);
+setSelectedBrew(item)
+setTime(item.time)
 ```
 
 ---
 
-## 🟢 Step 3: React re-renders UI
+## 2. State updates in App.jsx
 
-* `time` changes → Timer updates
-* `selectedBrew` changes → Image updates
+React detects state change → triggers re-render
 
 ---
 
-## 🟢 Step 4: Props pass data to children
+## 3. UI updates automatically
+
+* selectedBrew → updates message + image
+* time → updates timer
+
+---
+
+## 4. Props pass data to child components
 
 ```js
 <TimerDisplay time={time} />
-<BrewCard setTime={setTime} />
+<BrewCard setSelectedBrew={setSelectedBrew} />
 ```
 
 ---
 
-# 🔄 PARENT → CHILD DATA FLOW
+# 🔄 Parent → Child Flow (Important)
 
-👉 React uses **one-way data flow**
-
-## Parent (App.jsx):
+Data flows **top to bottom**
 
 ```js
-<TimerDisplay time={time} />
+<App>
+  <TimerDisplay time={time} />
+</App>
 ```
 
-## Child (TimerDisplay.jsx):
+Child receives:
 
 ```js
-function TimerDisplay({ time }) {
+function TimerDisplay({ time })
 ```
-
-👉 Child receives data via **props**
 
 ---
 
-# 🔄 CHILD → PARENT COMMUNICATION
+# 🔄 Child → Parent Communication
 
-React doesn’t allow direct upward data flow.
+React does NOT allow direct upward flow.
 
 So we pass functions:
 
@@ -151,17 +161,17 @@ So we pass functions:
 <BrewCard setTime={setTime} />
 ```
 
-Then inside child:
+Child uses it:
 
 ```js
-setTime(item.time);
+setTime(item.time)
 ```
 
-👉 Child triggers parent state update
+👉 This updates parent state
 
 ---
 
-# ⏱️ TIMER LOGIC (CORE LOGIC)
+# ⏱️ Timer Logic (useEffect)
 
 ```js
 useEffect(() => {
@@ -175,7 +185,7 @@ useEffect(() => {
 
   if (time === 0 && isRunning) {
     setIsRunning(false);
-    setMessage("☕ Coffee is ready!");
+    setHasFinished(true);
   }
 
   return () => clearInterval(timer);
@@ -184,119 +194,103 @@ useEffect(() => {
 
 ---
 
-## 🧠 Explanation
+## 🧠 What’s happening here?
 
-* `useEffect` runs when `time` or `isRunning` changes
-* Starts countdown using `setInterval`
-* Stops timer when:
-
-  * time reaches 0
-* Cleans interval (important for performance)
-
----
-
-# 🧩 COMPONENT BREAKDOWN
-
-## 1. App.jsx
-
-* Stores:
-
-  * time
-  * selectedBrew
-  * isRunning
-  * message
-* Controls everything
+* Runs when `time` or `isRunning` changes
+* Starts timer using `setInterval`
+* Decreases time every second
+* Stops when time reaches 0
+* Cleans interval to avoid bugs
 
 ---
 
-## 2. BrewCard.jsx
+# 🧩 Component Responsibilities
+
+## App.jsx
+
+* Manages all state
+* Controls flow and logic
+
+---
+
+## BrewCard.jsx
 
 * Displays coffee options
-* Updates parent state
+* Updates selected coffee
 
 ---
 
-## 3. TimerDisplay.jsx
+## Controls.jsx
 
-* Converts seconds → minutes:seconds
+* Handles Start / Pause / Reset
+
+---
+
+## TimerDisplay.jsx
+
+* Converts seconds → MM:SS format
 * Displays time
 
 ---
 
-## 4. Controls.jsx
+# 🔁 UI Flow (User Perspective)
 
-* Start / Pause / Reset functionality
+1. User selects coffee
+   → “You selected Espresso”
+
+2. User clicks Start
+   → “Your Espresso will be ready in:”
+
+3. Timer counts down
+
+4. Timer ends
+   → “Your Espresso is ready!”
 
 ---
 
-# 🎨 UI LOGIC
+# 🎨 UI Approach
 
 * Tailwind CSS used for styling
+* Card-based layout
 * Gradient background
-* Centered card layout
-* Responsive spacing
+* Minimal and clean design
 
 ---
 
-# 🧠 KEY REACT CONCEPTS USED
+# 🧠 Why This Project Is Easy to Understand
 
-* useState → manage dynamic data
-* useEffect → handle side effects (timer)
+* Single source of truth → App.jsx
+* Small components → each has one job
+* No unnecessary logic
+* UI fully controlled by state
+
+---
+
+# 🔑 Key React Concepts Used
+
+* useState → manage data
+* useEffect → handle timer
 * Props → pass data
-* Component-based design → modular code
+* Component structure → modular design
 * Immutability → safe updates
 
 ---
 
-# 🔥 COMPLETE LOGIC IN ONE LINE
+# 🔥 Full Logic in One Line
 
-1. User clicks → state updates
-2. State changes → React re-renders
-3. UI updates automatically
+User action → state update → React re-renders → UI updates automatically
 
 ---
 
-# 📌 WHAT MAKES THIS PROJECT GOOD
+# 📈 Possible Improvements
 
-* Clean structure
-* Proper separation of concerns
-* Real-world use of useEffect
-* Clear data flow
-* Easy to scale
-
----
-
-# 🚀 HOW TO RUN
-
-```bash
-npm install
-npm run dev
-```
-
----
-
-# 📷 Preview
-
-Whole UI:
-<img width="1470" height="956" alt="Screenshot 2026-05-03 at 8 54 58 PM" src="https://github.com/user-attachments/assets/76337518-d824-4157-9ecc-1b4d04d7331f" />
-
-Espreeso:
-<img width="1470" height="956" alt="Screenshot 2026-05-03 at 8 55 29 PM" src="https://github.com/user-attachments/assets/3d99f070-9120-4682-82a8-91cb7d4d6b52" />
-
-Aero Press Coffe:<img width="1470" height="956" alt="Screenshot 2026-05-03 at 8 56 43 PM" src="https://github.com/user-attachments/assets/299c1012-dd74-49f5-87d7-b472b529efac" />
-
----
-
-# 📈 FUTURE IMPROVEMENTS
-
-* Add sound notification
-* Add animations
+* Add sound when timer ends
 * Add custom timer input
-* Save previous selections
+* Add animations
+* Store previous selections
 
 ---
 
-# 👨‍💻 AUTHOR
+# 👨‍💻 Author
 
 Aaryan Kuchekar
-
